@@ -65,10 +65,46 @@ def dashboard(request):
 
 @login_required
 def profile(request):
+    if request.method == 'POST':
+        # Handle basic information update
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        timezone = request.POST.get('timezone')
+        password = request.POST.get('password')
+        
+        user = request.user
+        user.first_name = first_name
+        user.last_name = last_name
+        user.timezone = timezone
+        
+        if password:
+            user.set_password(password)
+        
+        user.save()
+        messages.success(request, 'Profile updated successfully!')
+        
     context = {
         'active_tab': 'profile'
     }
     return render(request, 'user_dashboard/profile.html', context)
+
+@login_required
+def profile_more(request):
+    if request.method == 'POST':
+        # Handle additional information update
+        user = request.user
+        user.website = request.POST.get('website')
+        user.phone = request.POST.get('phone')
+        user.skype = request.POST.get('skype')
+        user.whatsapp = request.POST.get('whatsapp')
+        user.address = request.POST.get('address')
+        user.city = request.POST.get('city')
+        user.save()
+        
+        messages.success(request, 'Additional information updated successfully!')
+        return redirect('user_profile')
+    
+    return redirect('user_profile')
 
 @login_required
 def security_settings(request):
